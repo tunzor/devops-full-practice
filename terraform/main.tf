@@ -60,3 +60,12 @@ resource "google_compute_instance" "test1" {
         google_compute_firewall.web-in
     ]
 }
+
+# Output ip address of test1 instance above
+output "test1-ip-addr" {
+    value = google_compute_instance.test1.network_interface.0.network_ip 
+
+    depends_on = [
+        google_compute_instance.test1
+    ]
+}

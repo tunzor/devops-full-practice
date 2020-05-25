@@ -42,7 +42,6 @@ terraform plan
 
 # Apply the changes 
 # Optional [-auto-approve] will skip the verfication confirmation
-
 terraform apply [-auto-approve]
 ```
 

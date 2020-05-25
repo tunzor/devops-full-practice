@@ -34,7 +34,14 @@ When run, the `terraform` plan in this directory will:
 
 Run it from this directory with:
 ```
-# optional [-auto-approve] will skip the verfication
+# Initialize terraform
+terraform init
+
+# Optional command to see changes being applied
+terraform plan
+
+# Apply the changes 
+# Optional [-auto-approve] will skip the verfication confirmation
 
 terraform apply [-auto-approve]
 ```

@@ -31,3 +31,15 @@ When run, the `terraform` plan in this directory will:
 1. Create a network called `devops-net`
 2. Create a firewall rule to allow traffic on port `80`
 3. Create an instance on the `devops-net` network
+
+Run it from this directory with:
+```
+# optional [-auto-approve] will skip the verfication
+
+terraform apply [-auto-approve]
+```
+
+Once finished, all resources can be destroyed with:
+```
+terraform destroy [-auto-approve]
+```

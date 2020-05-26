@@ -13,6 +13,9 @@ variable "default_machine" {
 variable "default_network" {
     default = "devops-net"
 }
+variable "desired-vms" {
+    default = 3
+}
 
 provider "google" {
     credentials = file("creds.json")
@@ -39,8 +42,11 @@ resource "google_compute_firewall" "web-in" {
 }
 
 # INSTANCES
-resource "google_compute_instance" "test1" {
-    name = "test1-vm"
+resource "google_compute_instance" "gce_instances" {
+    # Create several vms
+    count = var.desired-vms
+    name = "test${count.index}-vm"
+
     machine_type = var.default_machine
     zone = var.default_zone
 
@@ -61,11 +67,11 @@ resource "google_compute_instance" "test1" {
     ]
 }
 
-# Output ip address of test1 instance above
-output "test1-ip-addr" {
-    value = google_compute_instance.test1.network_interface.0.network_ip 
+resource "local_file" "inventory" {
+    filename = "hosts"
+    content = join("\n", google_compute_instance.gce_instances.*.network_interface.0.network_ip)
 
     depends_on = [
-        google_compute_instance.test1
+        google_compute_instance.gce_instances
     ]
 }

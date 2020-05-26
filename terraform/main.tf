@@ -63,6 +63,7 @@ resource "google_compute_instance" "gce_instances" {
 
     network_interface {
         network = var.default_network
+        # Leaving access_config empty will assign the instance an ephemeral IP
         access_config {}
     }
 

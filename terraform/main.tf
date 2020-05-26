@@ -72,8 +72,7 @@ resource "google_compute_instance" "gce_instances" {
 
 resource "local_file" "inventory" {
     filename = "hosts"
-    content = join("\n", ["[
-        ${var.hosts_group_name}]",
+    content = join("\n", ["[${var.hosts_group_name}]",
         join("\n", google_compute_instance.gce_instances.*.network_interface.0.network_ip)
         ])
 

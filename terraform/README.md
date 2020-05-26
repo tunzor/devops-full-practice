@@ -49,3 +49,44 @@ Once finished, all resources can be destroyed with:
 ```
 terraform destroy [-auto-approve]
 ```
+---
+
+## Notes
+### Background
+Terraform is a tool for building and managing infrastructure. It codifies the infrastructure resources into configuration files (`.tf` extension) that allows for easy versioning, sharing, and collaboration. 
+
+### How It Works
+At a high level, Terraform reads your config, checks the state of the resources in it, and applies any changes to the current state to bring it to the desired state outlined in your config file.
+
+### Common commands
+`terraform init` will initialize a working directory containing `.tf` files; this should be run first after creating a config file
+
+`terraform refresh` will cause Terraform to check the current state of resources and update the `.tfstate` file it maintains
+
+`terraform plan` will perform a `terraform refresh` and output a list of changes necessary to bring it to the desired state; `-out` can optionally be added to save the output to a file
+
+`terraform apply` will perform a `terraform plan` and prompt the user for confirmation that the changes should be applied to bring the current state to the desired state; `-auto-approve` can optionally be added to automatically approve the action
+
+`terraform destroy` functions the same as `terraform apply` except it will delete any resources from the config file that still exist
+
+### Config Files
+[Configuration files](https://www.terraform.io/docs/configuration/syntax.html) (`.tf`) are written in the [Hashicorp Config Language](https://github.com/hashicorp/hcl) (`HCL`) and generally follow the structure of:
+```
+HCL_KEYWORD ["RESOURCE_TYPE"] "LOCAL_OBJECT_NAME" {}
+
+Examples:
+variable "my_instance_name" {
+    default = "hello_world"
+}
+
+resource "google_compute_instance" "my_gce_instance" {
+    ...
+}
+``` 
+
+Defined variables can be used with the `var` prefix:
+```
+resource "google_compute_instance" "my_gce_instance" {
+    name = var.my_instance_name
+}
+```

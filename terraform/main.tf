@@ -36,7 +36,7 @@ resource "google_compute_firewall" "web-in" {
     network = var.default_network
     allow {
         protocol = "tcp"
-        ports = ["80"]
+        ports = ["80", "22"]
     }
 
     depends_on = [
@@ -63,6 +63,7 @@ resource "google_compute_instance" "gce_instances" {
 
     network_interface {
         network = var.default_network
+        access_config {}
     }
 
     depends_on = [
@@ -71,9 +72,9 @@ resource "google_compute_instance" "gce_instances" {
 }
 
 resource "local_file" "inventory" {
-    filename = "hosts"
+    filename = "../ansible/hosts"
     content = join("\n", ["[${var.hosts_group_name}]",
-        join("\n", google_compute_instance.gce_instances.*.network_interface.0.network_ip)
+        join("\n", google_compute_instance.gce_instances.*.network_interface.0.access_config.0.nat_ip)
         ])
 
     depends_on = [

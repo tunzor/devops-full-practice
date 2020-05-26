@@ -3,7 +3,7 @@ This section is for setting up cloud infrastructure on GCP with terraform and wi
 - virtual machines (`f1-micro` in `us-east1` region)
 - firewall rules to limit incoming traffic to necessary ports
 
-## Pre-requisite
+## Prerequisite
 Ensure that the `GCP` project and the service account are setup.
 1. Create the project, attach to billing account, activate, and enable `GCE`
 ```

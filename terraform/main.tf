@@ -19,6 +19,8 @@ variable "desired_vms" {
 variable "hosts_group_name" {
     default = "gcp_instances"
 }
+# Terraform will prompt for ssh_user's value before running;
+# it can be defaulted like the ssh_key path below
 variable "ssh_user" {}
 variable "ssh_key" {
     default = "~/.ssh/id_rsa.pub"
@@ -58,6 +60,8 @@ resource "google_compute_instance" "gce_instances" {
     zone = var.default_zone
 
     boot_disk {
+        # Using debian as python comes installed on it;
+        # necessary for ansible
         initialize_params {
             image = "debian-cloud/debian-9"
         }

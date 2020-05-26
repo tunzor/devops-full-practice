@@ -29,8 +29,9 @@ gcloud iam service-accounts keys create creds.json --iam-account devops-master@d
 ## Running Terraform
 When run, the `terraform` plan in this directory will:
 1. Create a network called `devops-net`
-2. Create a firewall rule to allow traffic on port `80`
-3. Create an instance on the `devops-net` network
+2. Create a firewall rule to allow traffic on ports `80` and `22`
+3. Create a number of instances on the `devops-net` network (`desired_vms` variable in `main.tf`)
+4. Add the local user's public ssh key to the metadata of the instances to allow `ssh` access (terraform will ask for the user's id to save into the variable `ssh_user`; did this so as not to check in user information)
 
 Run it from this directory with:
 ```

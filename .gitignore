@@ -2,3 +2,4 @@ creds.json
 .DS_STORE
 .terraform
 *.tfstate*
+*hosts*

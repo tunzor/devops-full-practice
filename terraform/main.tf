@@ -19,6 +19,10 @@ variable "desired_vms" {
 variable "hosts_group_name" {
     default = "gcp_instances"
 }
+variable "ssh_user" {}
+variable "ssh_key" {
+    default = "~/.ssh/id_rsa.pub"
+}
 
 provider "google" {
     credentials = file("creds.json")
@@ -55,8 +59,12 @@ resource "google_compute_instance" "gce_instances" {
 
     boot_disk {
         initialize_params {
-            image = "centos-cloud/centos-8"
+            image = "debian-cloud/debian-9"
         }
+    }
+
+    metadata = {
+        ssh-keys = "${var.ssh_user}:${file(var.ssh_key)}"
     }
 
     metadata_startup_script = "for i in {1..100}; do echo \"printing $i\"; done"

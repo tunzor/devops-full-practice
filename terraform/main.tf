@@ -13,8 +13,11 @@ variable "default_machine" {
 variable "default_network" {
     default = "devops-net"
 }
-variable "desired-vms" {
+variable "desired_vms" {
     default = 3
+}
+variable "hosts_group_name" {
+    default = "gcp_instances"
 }
 
 provider "google" {
@@ -44,7 +47,7 @@ resource "google_compute_firewall" "web-in" {
 # INSTANCES
 resource "google_compute_instance" "gce_instances" {
     # Create several vms
-    count = var.desired-vms
+    count = var.desired_vms
     name = "test${count.index}-vm"
 
     machine_type = var.default_machine
@@ -69,7 +72,10 @@ resource "google_compute_instance" "gce_instances" {
 
 resource "local_file" "inventory" {
     filename = "hosts"
-    content = join("\n", google_compute_instance.gce_instances.*.network_interface.0.network_ip)
+    content = join("\n", ["[
+        ${var.hosts_group_name}]",
+        join("\n", google_compute_instance.gce_instances.*.network_interface.0.network_ip)
+        ])
 
     depends_on = [
         google_compute_instance.gce_instances

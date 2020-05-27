@@ -32,5 +32,9 @@ def weather(city):
             weather_data.append({'date': date['applicable_date'], 'temperature': date['the_temp'], 'weather_state': date['weather_state_name']})
         return json.dumps(weather_data)
 
+@app.route('/health')
+def health():
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003)

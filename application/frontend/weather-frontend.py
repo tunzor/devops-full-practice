@@ -36,5 +36,9 @@ def weather(city):
         html += '</table>'
         return html
 
+@app.route('/health')
+def health():
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002)

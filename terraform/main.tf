@@ -13,11 +13,11 @@ variable "default_machine" {
 variable "default_network" {
     default = "devops-net"
 }
-variable "desired_vms" {
+variable "desired_frontend_vms" {
     default = 3
 }
-variable "hosts_group_name" {
-    default = "gcp_instances"
+variable "desired_backend_vms" {
+    default = 3
 }
 # Terraform will prompt for ssh_user's value before running;
 # it can be defaulted like the ssh_key path below
@@ -37,12 +37,12 @@ resource "google_compute_network" "tf-devops-net" {
     name = var.default_network
 }
 
-resource "google_compute_firewall" "web-in" {
-    name = "allow-port-80"
+resource "google_compute_firewall" "frontend-in" {
+    name = "allow-frontend-in"
     network = var.default_network
     allow {
         protocol = "tcp"
-        ports = ["80", "22"]
+        ports = ["5002", "22"]
     }
 
     depends_on = [
@@ -50,11 +50,24 @@ resource "google_compute_firewall" "web-in" {
     ]
 }
 
-# INSTANCES
-resource "google_compute_instance" "gce_instances" {
+resource "google_compute_firewall" "backend-in" {
+    name = "allow-backend-in"
+    network = var.default_network
+    allow {
+        protocol = "tcp"
+        ports = ["5003", "22"]
+    }
+
+    depends_on = [
+        google_compute_network.tf-devops-net
+    ]
+}
+
+# Frontend instances
+resource "google_compute_instance" "gce_frontend_instances" {
     # Create several vms
-    count = var.desired_vms
-    name = "test${count.index}-vm"
+    count = var.desired_frontend_vms
+    name = "fe-vm-${count.index}"
 
     machine_type = var.default_machine
     zone = var.default_zone
@@ -80,17 +93,53 @@ resource "google_compute_instance" "gce_instances" {
     }
 
     depends_on = [
-        google_compute_firewall.web-in
+        google_compute_firewall.frontend-in
+    ]
+}
+
+# backend instances
+resource "google_compute_instance" "gce_backend_instances" {
+    # Create several vms
+    count = var.desired_backend_vms
+    name = "be-vm-${count.index}"
+
+    machine_type = var.default_machine
+    zone = var.default_zone
+
+    boot_disk {
+        # Using debian as python comes installed on it;
+        # necessary for ansible
+        initialize_params {
+            image = "debian-cloud/debian-9"
+        }
+    }
+
+    metadata = {
+        ssh-keys = "${var.ssh_user}:${file(var.ssh_key)}"
+    }
+
+    metadata_startup_script = "for i in {1..100}; do echo \"printing $i\"; done"
+
+    network_interface {
+        network = var.default_network
+        access_config {}
+    }
+
+    depends_on = [
+        google_compute_firewall.backend-in
     ]
 }
 
 resource "local_file" "inventory" {
     filename = "../ansible/hosts"
-    content = join("\n", ["[${var.hosts_group_name}]",
-        join("\n", google_compute_instance.gce_instances.*.network_interface.0.access_config.0.nat_ip)
+    content = join("\n", ["[frontend]",
+        join("\n", google_compute_instance.gce_frontend_instances.*.network_interface.0.access_config.0.nat_ip),
+        "[backend]",
+        join("\n", google_compute_instance.gce_backend_instances.*.network_interface.0.access_config.0.nat_ip)
         ])
 
     depends_on = [
-        google_compute_instance.gce_instances
+        google_compute_instance.gce_frontend_instances,
+        google_compute_instance.gce_backend_instances
     ]
 }

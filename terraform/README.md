@@ -41,17 +41,21 @@ Run it from this directory with:
 # Initialize terraform
 terraform init
 
-# Optional command to see changes being applied
-terraform plan
+# Show changes to be applied
+# Optional [-var="ssh_user=$USER"] sets the terraform
+# variable ssh_user to environment variable $USER;
+# if not used, terraform will prompt user for value
+# when running
+terraform plan [-var="ssh_user=$USER"]
 
 # Apply the changes 
 # Optional [-auto-approve] will skip the verfication confirmation
-terraform apply [-auto-approve]
+terraform apply [-auto-approve] [-var="ssh_user=$USER"]
 ```
 
 Once finished, all resources can be destroyed with:
 ```
-terraform destroy [-auto-approve]
+terraform destroy [-auto-approve] [-var="ssh_user=$USER"]
 ```
 ---
 

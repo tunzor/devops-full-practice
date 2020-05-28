@@ -20,7 +20,8 @@ variable "desired_backend_vms" {
     default = 3
 }
 # Terraform will prompt for ssh_user's value before running;
-# it can be defaulted like the ssh_key path below
+# it can be defaulted like the ssh_key path below or passed
+# with the terrform CLI command as [-var="ssh_user=$USER"]
 variable "ssh_user" {}
 variable "ssh_key" {
     default = "~/.ssh/id_rsa.pub"
@@ -132,8 +133,8 @@ resource "google_compute_instance" "gce_backend_instances" {
 
 resource "local_file" "inventory" {
     filename = "../ansible/hosts"
-    content = join("\n",
-        ["[all:vars]",
+    content = join("\n",[
+        "[all:vars]",
         "ansible_ssh_user=${var.ssh_user}",
         "[frontend]",
         join("\n", google_compute_instance.gce_frontend_instances.*.network_interface.0.access_config.0.nat_ip),

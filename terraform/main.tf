@@ -68,7 +68,7 @@ resource "google_compute_firewall" "backend-in" {
 resource "google_compute_instance" "gce_frontend_instances" {
     # Create several vms
     count = var.desired_frontend_vms
-    name = "fe-vm-${count.index}"
+    name = "frontend-vm-${count.index}"
 
     machine_type = var.default_machine
     zone = var.default_zone
@@ -102,7 +102,7 @@ resource "google_compute_instance" "gce_frontend_instances" {
 resource "google_compute_instance" "gce_backend_instances" {
     # Create several vms
     count = var.desired_backend_vms
-    name = "be-vm-${count.index}"
+    name = "backend-vm-${count.index}"
 
     machine_type = var.default_machine
     zone = var.default_zone

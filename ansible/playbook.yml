@@ -1,0 +1,12 @@
+---
+- hosts: frontend
+
+  tasks:
+  - name: Check python version
+    shell: python --version
+    # [register] saves output of shell 
+    # command to local variable named
+    # [output_var]
+    register: output_var
+  - debug:
+      var: output_var.stderr

@@ -34,7 +34,7 @@ When run, the `terraform` plan in this directory will:
     - `5003` is for the app backend
     - `22` for ssh access (for ansible)
 3. Create a number of instances on the `devops-net` network with public IP addresses and firewall rules above applied (`desired_frontend_vms` and `desired_backend_vms` variables in `main.tf`)
-4. Add the local user's public ssh key to the metadata of the instances to allow `ssh` access (terraform will ask for the user's id to save into the variable `ssh_user`; did this so as not to check in user information)
+4. Add the local user's public ssh key to the metadata of the instances to allow `ssh` access (terraform will ask for the user's id to save into the variable `ssh_user` if it's not passed as a CLI variable as outlined below; did this so as not to check in user information)
 
 Run it from this directory with:
 ```

@@ -3,3 +3,4 @@ creds.json
 .terraform
 *.tfstate*
 *hosts*
+*.retry*

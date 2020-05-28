@@ -132,7 +132,10 @@ resource "google_compute_instance" "gce_backend_instances" {
 
 resource "local_file" "inventory" {
     filename = "../ansible/hosts"
-    content = join("\n", ["[frontend]",
+    content = join("\n",
+        ["[all:vars]",
+        "ansible_ssh_user=${var.ssh_user}",
+        "[frontend]",
         join("\n", google_compute_instance.gce_frontend_instances.*.network_interface.0.access_config.0.nat_ip),
         "[backend]",
         join("\n", google_compute_instance.gce_backend_instances.*.network_interface.0.access_config.0.nat_ip)

@@ -14,10 +14,10 @@ variable "default_network" {
     default = "devops-net"
 }
 variable "desired_frontend_vms" {
-    default = 3
+    default = 1
 }
 variable "desired_backend_vms" {
-    default = 3
+    default = 1
 }
 # Terraform will prompt for ssh_user's value before running;
 # it can be defaulted like the ssh_key path below or passed
@@ -85,7 +85,7 @@ resource "google_compute_instance" "gce_frontend_instances" {
         ssh-keys = "${var.ssh_user}:${file(var.ssh_key)}"
     }
 
-    metadata_startup_script = "for i in {1..100}; do echo \"printing $i\"; done"
+    metadata_startup_script = "sudo apt install -y python3-pip"
 
     network_interface {
         network = var.default_network
@@ -119,7 +119,7 @@ resource "google_compute_instance" "gce_backend_instances" {
         ssh-keys = "${var.ssh_user}:${file(var.ssh_key)}"
     }
 
-    metadata_startup_script = "for i in {1..100}; do echo \"printing $i\"; done"
+    metadata_startup_script = "sudo apt install -y python3-pip"
 
     network_interface {
         network = var.default_network
@@ -136,6 +136,7 @@ resource "local_file" "inventory" {
     content = join("\n",[
         "[all:vars]",
         "ansible_ssh_user=${var.ssh_user}",
+        "ansible_python_interpreter=/usr/bin/python3",
         "[frontend]",
         join("\n", google_compute_instance.gce_frontend_instances.*.network_interface.0.access_config.0.nat_ip),
         "[backend]",

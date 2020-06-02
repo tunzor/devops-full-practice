@@ -2,11 +2,83 @@
 - hosts: frontend
 
   tasks:
-  - name: Check python version
-    shell: python --version
-    # [register] saves output of shell 
-    # command to local variable named
-    # [output_var]
+  - name: Get python3 version
+    shell: python3 --version
+    # [register] saves output of shell command to local
+    # variable named [output_var]
     register: output_var
-  - debug:
-      var: output_var.stderr
+    changed_when: '"Python" not in output_var.stdout'
+
+  - name: Print python3 version
+    debug:
+      var: output_var.stdout_lines
+
+  - name: Create weather directory
+    file:
+      path: /weather
+      state: directory
+    become: yes
+
+  - name: Create pyweather user
+    user:
+      name: pyweather
+    become: yes
+
+  - name: Copy pyweather files
+    copy:
+      src: '{{ item }}'
+      dest: /weather
+      owner: pyweather
+      mode: '0755'
+    become: yes
+    loop:
+      - files/pyweather/frontend/requirements.txt
+      - files/pyweather/frontend/weather-frontend.py
+
+  - name: Install requirements
+    pip:
+      requirements: /weather/requirements.txt
+      executable: pip3
+    become: yes
+
+- hosts: backend
+
+  tasks:
+  - name: Get python3 version
+    shell: python3 --version
+    # [register] saves output of shell command to local
+    # variable named [output_var]
+    register: output_var
+    changed_when: '"Python" not in output_var.stdout'
+
+  - name: Print python3 version
+    debug:
+      var: output_var.stdout_lines
+
+  - name: Create weather directory
+    file:
+      path: /weather
+      state: directory
+    become: yes
+
+  - name: Create pyweather user
+    user:
+      name: pyweather
+    become: yes
+
+  - name: Copy pyweather files
+    copy:
+      src: '{{ item }}'
+      dest: /weather
+      owner: pyweather
+      mode: '0755'
+    become: yes
+    loop:
+      - files/pyweather/backend/requirements.txt
+      - files/pyweather/backend/weather-backend.py
+
+  - name: Install requirements
+    pip:
+      requirements: /weather/requirements.txt
+      executable: pip3
+    become: yes
